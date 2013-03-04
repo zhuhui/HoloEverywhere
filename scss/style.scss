@@ -4,6 +4,7 @@ $panel-color: rgba(80, 80, 80, 0.3);
 $panel-width: 1000px;
 $panel-border-size: 2px;
 $foreground-color: #E6D3BD;
+$foreground-color-dark: #404346;
 $min-width: 240px;
 $header-font-size: 36px;
 $header-font-size-small: 28px;
@@ -27,6 +28,20 @@ $menu-child-distance-small: 2px;
   transition: $style;
 }
 
+@mixin border-line($where: none, $size: 2px) {
+  @if $where == top {
+    border-top: $size solid $base-color;
+  } @else if $where == bottom {
+    border-bottom: $size solid $base-color;
+  } @else if $where == left {
+    border-left: $size solid $base-color;
+  } @else if $where == right {
+    border-right: $size solid $base-color;
+  } @else {
+    border: 0;
+  }
+}
+
 html {
   background: $background-color;
   color: $foreground-color;
@@ -34,22 +49,18 @@ html {
 }
 
 body {
-	margin: 0;
-	padding: 0;
+  background: $panel-color;
+  width: $panel-width;
+  min-width: $min-width;
+  border: $panel-border-size groove rgba(140, 140, 140, 0.4);
+  margin: 32px auto;
+  padding: 0;
 }
 
 div.clearfix {
-	zoom:1;
-	clear: both;
-	display: block;
-}
-
-.container {
-  width: $panel-width;
-  min-width: $min-width;
-  margin: 32px auto;
-  background: $panel-color;
-  border: $panel-border-size groove rgba(140, 140, 140, 0.4);
+  zoom:1;
+  clear: both;
+  display: block;
 }
 
 img {
@@ -59,34 +70,40 @@ img {
 header.header {
   color: $base-color;
   font-size: $header-font-size;
-  padding: $header-padding;
-  border-bottom: 2px inset $base-color;
-  * {
+  @include border-line(bottom);
+  img.logo,div.text {
     display: inline-block;
-    vertical-align:middle;
+    vertical-align: middle;
   }
-  p {
-    margin: 0;
+  img.logo {
+    margin: $header-padding;
+  }
+  div.text {
+    display: inline-block;
+    margin: $header-padding;
     padding: 0;
     font-weight: bold;
-    span.sub {
+    .subtitle {
       font-weight: normal;
       font-size: .7em;
     }
   }
   ul.menu {
+    display: block;
     font-size: 0;
     padding: 0;
     margin: 0;
+    width: auto;
+    @include border-line(top);
     li {
+      display: inline-block;
       font-size: ($header-font-size * 0.7);
-      background: $base-color;
-      padding: 6px;
-      margin: 0 $menu-child-distance 0 0;
-      &:last-child {
-        margin-right: 0;
-      }
+      padding: 8px 12px;
       @include transition(background 0.4s ease 0);
+      @include border-line(right, 1px);
+      @include border-line(left, 1px);
+      &:first-child { border-left: 0; }
+      &:last-child { border-right: 0; }
       &:hover {
         cursor: pointer;
         background: ($base-color + #222222);
@@ -95,8 +112,30 @@ header.header {
         color: $foreground-color;
         text-decoration: none;
       }
+      &.active {
+        @include border-line();
+        background: $base-color;
+        a {
+          color: $foreground-color-dark;
+        }
+        &:hover {
+          cursor: default !important;
+          background: ($base-color + #333333);
+        }
+      }
+    }
+    &:empty {
+      display: none;
     }
   }
+}
+
+footer.footer {
+  @include border-line(top);
+  padding: 4px;
+  text-align: right;
+  font-style:italic;
+  color: $base-color;
 }
 
 .node {
@@ -107,7 +146,7 @@ header.header {
   padding: $node-padding;
   header:first-child {
     font-size: 1.3em;
-    border-bottom: 2px solid $base-color;
+    @include border-line(bottom);
     display: block;
     color: $base-color;
     padding: 4px;
@@ -115,46 +154,48 @@ header.header {
   }
 }
 
+a.fork-me {
+  position: fixed;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
 @media all and (max-width: $panel-width) {
-  .container {
+  body {
     margin: 0;
     width: auto;
     border: 0;
+  }
+  a.fork-me {
+    display: none;
   }
 }
 
 @media all and (max-width: ($panel-width * 0.9)) {
   header.header {
     font-size: $header-font-size-small;
-  	text-align: center;
-  	padding: $header-padding 0 0 0;
-  	p {
-  	  display: block;
-  	  margin-bottom: 4px;
-  	}
-  	ul.menu {
-  	  float: none;
-  	  display: block;
-  	  border-top: 2px solid $base-color;
-  	  li {
-  	    font-size: ($header-font-size-small * 0.7);
-  	    background: none;
-  	    margin: 0 $menu-child-distance-small 0 0;
-  	    color: $base-color;
-  	    padding-left: 10px;
-  	    padding-right: 10px;
-  	    @include transition((background 0.4s ease 0, color 0.4s ease 0));
-        &:last-child {
-          margin-right: 0;
-        }
+    text-align: center;
+    padding: $header-padding 0 0 0;
+    ul.menu {
+      float: none;
+      display: block;
+      @include border-line(top);
+      li {
+        font-size: ($header-font-size-small * 0.7);
+        background: none;
+        color: $base-color;
+        padding-left: 10px;
+        padding-right: 10px;
+        @include transition((background 0.4s ease 0, color 0.4s ease 0));
         &:hover {
           color: white;
         }
-  	    a {
-  	      color: inherit;
-  	    }
-  	  }
-  	}
+        a {
+          color: inherit;
+        }
+      }
+    }
   }
   .node {
     float: none;
@@ -176,4 +217,26 @@ header.header {
     visiblity: 0;
     display: none;
   }
+}
+
+@media all and (max-width: ($panel-width / 2)) {
+  header.header {
+    div.text {
+      margin-bottom: 4px;
+    }
+    ul.menu {
+      li {
+        display: block;
+        border: 0;
+        @include border-line(top, 1px);
+        @include border-line(bottom, 1px);
+        &:first-child { border-top: 0; }
+        &:last-child { border-bottom: 0; }
+      }
+    }
+  }
+}
+
+holoeverywhere,.gone {
+  display: none;
 }

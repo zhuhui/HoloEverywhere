@@ -1,2 +1,2 @@
 #!/bin/bash
-scss --watch scss:css
+scss -t compressed --watch scss:css
