@@ -1,0 +1,10 @@
+[ {
+	"title" : "Home",
+	"link" : "/"
+}, {
+	"title" : "Download",
+	"link" : "/download.htm"
+}, {
+	"title" : "Wiki",
+	"link" : "https://github.com/ChristopheVersieux/HoloEverywhere/wiki"
+} ]

@@ -16,9 +16,15 @@ var Holo = {
 		}
 
 		this._attachHeader();
+		this._attachContent();
+		this._attachFooter();
 		this._attachForkMe();
 
-		this.refresh();
+		$("div.node").appendTo('div.content').after(function(index) {
+			return index % 2 == 0 ? null : $("<div>", {
+				class : "clearfix"
+			});
+		});
 	},
 	_attachHeader : function() {
 		var header = $("<header>", {
@@ -49,6 +55,17 @@ var Holo = {
 			appendTo : header
 		});
 	},
+	_attachContent : function() {
+		$("<div>", {
+			class : "content",
+			appendTo : $("body"),
+		});
+	},
+	_attachFooter : function() {
+		$("<footer>", {
+			class : "footer",
+		});
+	},
 	_attachForkMe : function() {
 		$("<a>", {
 			appendTo : $("body"),
@@ -75,12 +92,15 @@ var Holo = {
 			appendTo : $("head")
 		});
 	},
-	refresh : function() {
-		var he = $("holoeverywhere");
-		this.title(he.attr("title"));
-		this.subtitle(he.attr("subtitle"));
-		this.logo(he.attr("logo"));
-		this.forkme(he.attr("forkme"));
+	refresh : function(data) {
+		$($.proxy(function() {
+			this.title(data.title);
+			this.subtitle(data.subtitle);
+			this.logo(data.logo);
+			this.forkme(data.forkme);
+			this.footer(data.footer);
+			this.menu(data.menu);
+		}, this));
 	},
 	title : function(title) {
 		document.title = $("<div>").html(title).text(); // Strip tags
@@ -94,6 +114,36 @@ var Holo = {
 	},
 	forkme : function(url) {
 		$("a.fork-me").attr("href", url);
+	},
+	footer : function(footer) {
+		$("footer.footer").html(footer);
+	},
+	menu : function(menu) {
+		var context = this;
+		if (typeof menu == "string") {
+			$.ajax(menu, {
+				success : function(data) {
+					context.menu($.parseJSON(data));
+				}
+			});
+			return;
+		}
+		var menuContainer = $("header.header ul.menu");
+		menuContainer.empty();
+		$(menu).each(function(index, item) {
+			var clazz = context.menuItemShouldBeActive(item) ? "active" : null;
+			$("<li>", {
+				class : clazz,
+				append : $("<a>", {
+					href : item.link,
+					html : item.title
+				}),
+				appendTo : menuContainer
+			});
+		});
+	},
+	menuItemShouldBeActive : function(item) {
+		return window.location.pathname === item.link;
 	}
 };
 
